@@ -229,12 +229,12 @@ static st_prep_t prep;
 
 void st_wake_up()
 {
-  #ifdef DEFAULTS_RAMPS_BOARD
+  #ifdef STEPPERS_DISABLE_INDEPENDENTLY
     int idx;
   #endif // Ramps Board
   
   // Enable stepper drivers.
-  #ifdef DEFAULTS_RAMPS_BOARD
+  #ifdef STEPPERS_DISABLE_INDEPENDENTLY
     if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) {
       STEPPER_DISABLE_PORT(0) |= (1 << STEPPER_DISABLE_BIT(0));
       STEPPER_DISABLE_PORT(1) |= (1 << STEPPER_DISABLE_BIT(1));
@@ -244,16 +244,21 @@ void st_wake_up()
       STEPPER_DISABLE_PORT(1) &= ~(1 << STEPPER_DISABLE_BIT(1));
       STEPPER_DISABLE_PORT(2) &= ~(1 << STEPPER_DISABLE_BIT(2));
     }
+  #else
+    if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) { STEPPERS_DISABLE_PORT |= (1<<STEPPERS_DISABLE_BIT); }
+    else { STEPPERS_DISABLE_PORT &= ~(1<<STEPPERS_DISABLE_BIT); }
+    
+  #endif // Ramps Board
+  
+  #ifdef DEFAULTS_RAMPS_BOARD
     // Initialize stepper output bits to ensure first ISR call does not step.
     for (idx = 0; idx < N_AXIS; idx++) {
       st.step_outbits[idx] = step_port_invert_mask[idx];
     }
   #else
-    if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) { STEPPERS_DISABLE_PORT |= (1<<STEPPERS_DISABLE_BIT); }
-    else { STEPPERS_DISABLE_PORT &= ~(1<<STEPPERS_DISABLE_BIT); }
     // Initialize stepper output bits to ensure first ISR call does not step.
     st.step_outbits = step_port_invert_mask;
-  #endif // Ramps Board
+  #endif
 
   // Initialize step pulse timing from settings. Here to ensure updating after re-writing.
   #ifdef STEP_PULSE_DELAY
@@ -288,7 +293,7 @@ void st_go_idle()
     pin_state = true; // Override. Disable steppers.
   }
   if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) { pin_state = !pin_state; } // Apply pin invert.
-  #ifdef DEFAULTS_RAMPS_BOARD
+  #ifdef STEPPERS_DISABLE_INDEPENDENTLY
     if (pin_state) {
       STEPPER_DISABLE_PORT(0) |= (1 << STEPPER_DISABLE_BIT(0));
       STEPPER_DISABLE_PORT(1) |= (1 << STEPPER_DISABLE_BIT(1));
@@ -659,22 +664,26 @@ void st_reset()
 // Initialize and start the stepper motor subsystem
 void stepper_init()
 {
+  // Configure disable interface pins
+  #ifdef STEPPERS_DISABLE_INDEPENDENTLY
+    STEPPER_DISABLE_DDR(0) |= 1<<STEPPER_DISABLE_BIT(0);
+    STEPPER_DISABLE_DDR(1) |= 1<<STEPPER_DISABLE_BIT(1);
+    STEPPER_DISABLE_DDR(2) |= 1<<STEPPER_DISABLE_BIT(2);
+  #else 
+    STEPPERS_DISABLE_DDR |= 1<<STEPPERS_DISABLE_BIT;
+  #endif
+
   // Configure step and direction interface pins
   #ifdef DEFAULTS_RAMPS_BOARD
     STEP_DDR(0) |= 1<<STEP_BIT(0);
     STEP_DDR(1) |= 1<<STEP_BIT(1);
     STEP_DDR(2) |= 1<<STEP_BIT(2);
-  
-    STEPPER_DISABLE_DDR(0) |= 1<<STEPPER_DISABLE_BIT(0);
-    STEPPER_DISABLE_DDR(1) |= 1<<STEPPER_DISABLE_BIT(1);
-    STEPPER_DISABLE_DDR(2) |= 1<<STEPPER_DISABLE_BIT(2);
-  
+
     DIRECTION_DDR(0) |= 1<<DIRECTION_BIT(0);
     DIRECTION_DDR(1) |= 1<<DIRECTION_BIT(1);
     DIRECTION_DDR(2) |= 1<<DIRECTION_BIT(2);
   #else
     STEP_DDR |= STEP_MASK;
-    STEPPERS_DISABLE_DDR |= 1<<STEPPERS_DISABLE_BIT;
     DIRECTION_DDR |= DIRECTION_MASK;
   #endif // Ramps Board
 
