@@ -177,6 +177,7 @@
   #define DIRECTION_PIN(i) _PIN(DIRECTION_PORT_##i)
 
   // Define stepper driver enable/disable output pin.
+  #define STEPPERS_DISABLE_INDEPENDENTLY
   #define STEPPER_DISABLE_PORT_0 D
   #define STEPPER_DISABLE_PORT_1 F
   #define STEPPER_DISABLE_PORT_2 K
@@ -283,12 +284,115 @@
   #define SPINDLE_PWM_BIT   5 // MEGA2560 Digital Pin 8 
 
 #endif
-/* 
+ 
 #ifdef CPU_MAP_CUSTOM_PROC
   // For a custom pin map or different processor, copy and edit one of the available cpu
   // map files and modify it to your needs. Make sure the defined name is also changed in
   // the config.h file.
+
+  // Define ports and pins
+  #define DDR(port) DDR##port
+  #define _DDR(port) DDR(port)
+  #define PORT(port) PORT##port
+  #define _PORT(port) PORT(port)
+  #define PIN(pin) PIN##pin
+  #define _PIN(pin) PIN(pin)
+
+  // Define step pulse output pins. NOTE: All step bit pins must be on the same port.
+  #define STEP_DDR      DDRC
+  #define STEP_PORT     PORTC
+  #define STEP_PIN      PINC
+  #define X_STEP_BIT    7 // MEGA2560 Digital Pin 30
+  #define Y_STEP_BIT    6 // MEGA2560 Digital Pin 31
+  #define Z_STEP_BIT    5 // MEGA2560 Digital Pin 32
+  #define STEP_MASK ((1<<X_STEP_BIT)|(1<<Y_STEP_BIT)|(1<<Z_STEP_BIT)) // All step bits
+
+  // Define step direction output pins. NOTE: All direction pins must be on the same port.
+  #define DIRECTION_DDR     DDRA
+  #define DIRECTION_PORT    PORTA
+  #define DIRECTION_PIN     PINC
+  #define X_DIRECTION_BIT   2 // MEGA2560 Digital Pin 24
+  #define Y_DIRECTION_BIT   3 // MEGA2560 Digital Pin 25 
+  #define Z_DIRECTION_BIT   4 // MEGA2560 Digital Pin 26 
+  #define DIRECTION_MASK ((1<<X_DIRECTION_BIT)|(1<<Y_DIRECTION_BIT)|(1<<Z_DIRECTION_BIT)) // All direction bits
+  
+  // Define step pulse output pins.
+  //#define STEP_PORT_0 C
+  //#define STEP_PORT_1 C
+  //#define STEP_PORT_2 C
+  //#define STEP_BIT_0 7  // X Step - Pin 30
+  //#define STEP_BIT_1 6  // Y Step - Pin 31
+  //#define STEP_BIT_2 5  // Z Step - Pin 32
+  //#define _STEP_BIT(i) STEP_BIT_##i
+  //#define STEP_BIT(i) _STEP_BIT(i)
+  //#define STEP_DDR(i) _DDR(STEP_PORT_##i)
+  //#define _STEP_PORT(i) _PORT(STEP_PORT_##i)
+  //#define STEP_PORT(i) _STEP_PORT(i)
+  //#define STEP_PIN(i) _PIN(STEP_PORT_##i)
+
+  // Define step direction output pins.
+  //#define DIRECTION_PORT_0 A
+  //#define DIRECTION_PORT_1 A
+  //#define DIRECTION_PORT_2 A
+  //#define DIRECTION_BIT_0 2 // X Dir - Pin 24
+  //#define DIRECTION_BIT_1 3 // Y Dir - Pin 25
+  //#define DIRECTION_BIT_2 4 // Z Dir - Pin 26
+  //#define _DIRECTION_BIT(i) DIRECTION_BIT_##i
+  //#define DIRECTION_BIT(i) _DIRECTION_BIT(i)
+  //#define DIRECTION_DDR(i) _DDR(DIRECTION_PORT_##i)
+  //#define _DIRECTION_PORT(i) _PORT(DIRECTION_PORT_##i)
+  //#define DIRECTION_PORT(i) _DIRECTION_PORT(i)
+  //#define DIRECTION_PIN(i) _PIN(DIRECTION_PORT_##i)
+
+  // Define stepper driver enable/disable output pin.
+  #define STEPPERS_DISABLE_INDEPENDENTLY
+  #define STEPPER_DISABLE_PORT_0 L
+  #define STEPPER_DISABLE_PORT_1 L
+  #define STEPPER_DISABLE_PORT_2 L
+  #define STEPPER_DISABLE_BIT_0 0 // X Enable - Pin 49
+  #define STEPPER_DISABLE_BIT_1 1 // Y Enable - Pin 48
+  #define STEPPER_DISABLE_BIT_2 3 // Z Enable - Pin 46
+  #define STEPPER_DISABLE_BIT(i) STEPPER_DISABLE_BIT_##i
+  #define STEPPER_DISABLE_DDR(i) _DDR(STEPPER_DISABLE_PORT_##i)
+  #define STEPPER_DISABLE_PORT(i) _PORT(STEPPER_DISABLE_PORT_##i)
+  #define STEPPER_DISABLE_PIN(i) _PIN(STEPPER_DISABLE_PORT_##i)
+
+  // Define homing/hard limit switch input pins and limit interrupt vectors. 
+  /*#define MIN_LIMIT_PORT_0 B
+  #define MIN_LIMIT_PORT_1 B
+  #define MIN_LIMIT_PORT_2 B
+  #define MIN_LIMIT_BIT_0 0 // X Limit Min - Pin 53
+  #define MIN_LIMIT_BIT_1 2 // Y Limit Min - Pin 51
+  #define MIN_LIMIT_BIT_2 1 // Z Limit Min - Pin 52*/
+/*
+  #define MIN_LIMIT_PORT_0 E
+  #define MIN_LIMIT_PORT_1 J
+  #define MIN_LIMIT_PORT_2 D
+  #define MIN_LIMIT_BIT_0 5 // X Limit Min - Pin D3
+  #define MIN_LIMIT_BIT_1 1 // Y Limit Min - Pin D14
+  #define MIN_LIMIT_BIT_2 3 // Z Limit Min - Pin D18
+
+  #define _MIN_LIMIT_BIT(i) MIN_LIMIT_BIT_##i
+  #define MIN_LIMIT_BIT(i) _MIN_LIMIT_BIT(i)
+  #define MIN_LIMIT_DDR(i) _DDR(MIN_LIMIT_PORT_##i)
+  #define MIN_LIMIT_PORT(i) _PORT(MIN_LIMIT_PORT_##i)
+  #define MIN_LIMIT_PIN(i) _PIN(MIN_LIMIT_PORT_##i)*/
+
+  // Define homing/hard limit switch input pins and limit interrupt vectors. 
+  // NOTE: All limit bit pins must be on the same port
+  #define DISABLE_LIMIT_PIN_PULL_UP
+  #define LIMIT_DDR       DDRB
+  #define LIMIT_PORT      PORTB
+  #define LIMIT_PIN       PINB
+  #define X_LIMIT_BIT     4 // MEGA2560 Digital Pin 10
+  #define Y_LIMIT_BIT     5 // MEGA2560 Digital Pin 11
+  #define Z_LIMIT_BIT     6 // MEGA2560 Digital Pin 12
+  #define LIMIT_INT       PCIE0  // Pin change interrupt enable pin
+  #define LIMIT_INT_vect  PCINT0_vect 
+  #define LIMIT_PCMSK     PCMSK0 // Pin change interrupt register
+  #define LIMIT_MASK ((1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)|(1<<Z_LIMIT_BIT)) // All limit bits
+
 #endif
-*/
+
 
 #endif

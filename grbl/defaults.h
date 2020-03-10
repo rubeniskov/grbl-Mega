@@ -495,4 +495,25 @@
   #define DEFAULT_HOMING_PULLOFF 1.0 // mm
 #endif
 
+
+#ifdef DEFAULTS_CUSTOM_BOARD
+#define DEFAULT_DIRECTION_INVERT_MASK 3
+#define DEFAULT_X_STEPS_PER_MM 579.0 
+#define DEFAULT_Y_STEPS_PER_MM 580.0
+#define DEFAULT_Z_STEPS_PER_MM 50.0
+#define DEFAULT_X_MAX_RATE 1200.0 // mm/min
+#define DEFAULT_Y_MAX_RATE 1200.0 // mm/min
+#define DEFAULT_Z_MAX_RATE 400.0 // mm/min
+#define DEFAULT_X_MAX_TRAVEL 200.0 // mm
+#define DEFAULT_Y_MAX_TRAVEL 200.0 // mm
+#define DEFAULT_Z_MAX_TRAVEL 10.0 // mm
+#define DEFAULT_HARD_LIMIT_ENABLE 1  // true
+#define DEFAULT_SOFT_LIMIT_ENABLE 0 // true
+#define DEFAULT_INVERT_LIMIT_PINS 1 // true
+#define DEFAULT_HOMING_ENABLE 1  // true
+#define DEFAULT_HOMING_DIR_MASK 0
+#define DEFAULT_HOMING_FEED_RATE 25.0 // mm/min
+#define DEFAULT_HOMING_SEEK_RATE 300.0 // mm/min
+#define DEFAULT_HOMING_PULLOFF 2.0 // mm
+#endif
 #endif
